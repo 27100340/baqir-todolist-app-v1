@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baqir's Todo List App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .hidden {
+      display: none;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eaeaea;
+    }
+    .header h1 {
+      margin: 0;
+      color: #2c3e50;
+    }
+    .container {
+      display: flex;
+      gap: 30px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 20px;
+    }
+    .sidebar {
+      width: 30%;
+      border-right: 1px solid #eaeaea;
+      padding-right: 20px;
+    }
+    .main {
+      width: 70%;
+    }
+    .list-item, .task-item {
+      padding: 12px;
+      margin-bottom: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .list-item:hover {
+      background-color: #f9f9f9;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .list-item.selected {
+      background-color: #e8f4fd;
+      border-left: 3px solid #3498db;
+    }
+    .task-item {
+      cursor: default;
+    }
+    .task-item:hover {
+      background-color: #f9f9f9;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .btn-small {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .btn-small:hover {
+      background: #e04141;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .error {
+      color: #e74c3c;
+      display: none;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #fde8e8;
+      margin-bottom: 15px;
+    }
+    .success {
+      color: #27ae60;
+      display: none;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #e8f8f0;
+      margin-bottom: 15px;
+    }
+    .auth-links {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .auth-links a {
+      color: #3498db;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .auth-links a:hover {
+      color: #2980b9;
+      text-decoration: underline;
+    }
+    .high-priority {
+      border-left: 4px solid #e74c3c;
+      padding-left: 8px;
+    }
+    .medium-priority {
+      border-left: 4px solid #f39c12;
+      padding-left: 8px;
+    }
+    .low-priority {
+      border-left: 4px solid #27ae60;
+      padding-left: 8px;
+    }
+    .task-priority {
+      font-size: 0.85em;
+      color: #7f8c8d;
+      margin-left: 10px;
+      background-color: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+    .priority-info {
+      font-size: 0.8em;
+      color: #7f8c8d;
+      margin-top: 5px;
+      font-style: italic;
+    }
+    #loginContainer, #appContainer {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-top: 50px;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-top: 0;
+      border-bottom: 1px solid #eaeaea;
+      padding-bottom: 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Baqir's Todolist App</h1>
+  <h2>Back-end is Python,  Front-end is HTML CSS JS</h2>
+  <div id="loginContainer">
+    <h2>Login</h2>
+    <div id="loginError" class="error"></div>
+    
+    <!-- Login Form -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    
+    <div class="auth-links">
+      <span>Don't have an account? </span>
+      <a href="#" id="signupLink">Sign up</a>
+    </div>
+    
+    <!-- Signup Form (Hidden by default) -->
+    <form id="signupForm" class="hidden">
+      <h2>Sign Up</h2>
+      <div id="signupSuccess" class="success">Account created successfully! You can now login.</div>
+      <div id="signupError" class="error"></div>
+      
+      <div class="form-group">
+        <label for="signupUsername">Username</label>
+        <input type="text" id="signupUsername" placeholder="Choose a username" required>
+      </div>
+      <div class="form-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" placeholder="Choose a password" required>
+      </div>
+      <button type="submit">Sign Up</button>
+      
+      <div class="auth-links">
+        <span>Already have an account? </span>
+        <a href="#" id="loginLink">Login</a>
+      </div>
+    </form>
+  </div>
+
+  <div id="appContainer" class="hidden">
+    <div class="header">
+      <h1>Todo App</h1>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    
+    <div class="container">
+      <!-- Sidebar with Todo Lists -->
+      <div class="sidebar">
+        <h2>My Lists</h2>
+        <form id="createListForm">
+          <div class="form-group">
+            <label for="newListName">New List</label>
+            <input type="text" id="newListName" placeholder="Enter list name" required>
+          </div>
+          <button type="submit">Create List</button>
+        </form>
+        <ul id="todolist"></ul>
+      </div>
+      
+      <!-- Main Content with Tasks -->
+      <div class="main">
+        <div id="noListSelected">
+          <p>Select a list to view tasks</p>
+        </div>
+        
+        <!-- Replace the existing task section header with this one -->
+        <div id="taskSection" class="hidden">
+          <h2 id="taskSectionHeader">Tasks</h2>
+          <form id="createTaskForm">
+            <div class="form-group">
+              <label for="newTaskTitle">Task Title</label>
+              <input type="text" id="newTaskTitle" placeholder="Enter task title" required>
+            </div>
+            <div class="form-group">
+              <label for="newTaskDesc">Description</label>
+              <input type="text" id="newTaskDesc" placeholder="Enter description (optional)">
+            </div>
+            <div class="form-group">
+              <label for="newTaskPriority">Priority (0-10)</label>
+              <input type="number" id="newTaskPriority" min="0" max="10" value="1" required>
+              <div class="priority-info">Lower number = Higher priority (0 is highest)</div>
+            </div>
+            <button type="submit">Add Task</button>
+          </form>
+          <ul id="taskList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Add this modal dialog for editing tasks right before the closing body tag -->
+<div id="editTaskModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Task</h3>
+      <span id="closeEditTaskModal" class="close-modal">&times;</span>
+    </div>
+    <div id="editTaskError" class="error"></div>
+    <form id="editTaskForm">
+      <div class="form-group">
+        <label for="editTaskTitle">Task Title</label>
+        <input type="text" id="editTaskTitle" placeholder="Enter task title" required>
+      </div>
+      <div class="form-group">
+        <label for="editTaskDesc">Description</label>
+        <input type="text" id="editTaskDesc" placeholder="Enter description (optional)">
+      </div>
+      <div class="form-group">
+        <label for="editTaskPriority">Priority (0-10)</label>
+        <input type="number" id="editTaskPriority" min="0" max="10" value="1" required>
+        <div class="priority-info">Lower number = Higher priority (0 is highest)</div>
+      </div>
+      <div class="form-group checkbox-group">
+        <label for="editTaskCompleted">
+          <input type="checkbox" id="editTaskCompleted">
+          Completed
+        </label>
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+</div>
+  <script src="app.js"></script>
+</body>
+</html>
