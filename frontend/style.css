@@ -1,229 +1,282 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
-}
-.hidden { display: none; }
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+  }
+  .hidden { display: none; }
+  
+  #loginContainer, #appContainer {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .main-layout {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 30%;
+    border-right: 1px solid #ddd;
+    padding-right: 15px;
+  }
+  
+  .content {
+    width: 70%;
+    padding-left: 15px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  li.list-item:hover,
+  li.task-item:hover {
+    background-color: #e9e9e9;
+  }
+  
+  li.selected {
+    background-color: #d1e7dd;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+  }
+  
+  input, select {
+    margin: 5px 0;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button, .btn, .btn-small {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-small {
+    padding: 5px 8px;
+    font-size: 0.9em;
+  }
+  
+  button:hover,
+  .btn:hover,
+  .btn-small:hover {
+    background-color: #45a049;
+  }
+  
+  .form-inline {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  
+  .task-title.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  
+  
+  /* Modal Styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+  }
+  
+  @keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+  }
+  
+  .close-modal {
+    font-size: 24px;
+    font-weight: bold;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .close-modal:hover {
+    color: #e74c3c;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  
+  /* Task item styling improvements */
+  .task-item {
+    transition: background-color 0.2s ease;
+  }
+  
+  .task-item:hover {
+    background-color: #f5f7fa;
+  }
+  
+  .task-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    cursor: pointer;
+  }
+  
+  .task-actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .edit-task {
+    background-color: #3498db;
+  }
+  
+  .edit-task:hover {
+    background-color: #2980b9;
+  }
+  
+  .task-title {
+    margin-right: 10px;
+    flex-grow: 1;
+  }
+  
+  /* Priority styling */
+  .high-priority {
+    border-left: 4px solid #e74c3c;
+    padding-left: 8px;
+  }
+  
+  .medium-priority {
+    border-left: 4px solid #f39c12;
+    padding-left: 8px;
+  }
+  
+  .low-priority {
+    border-left: 4px solid #27ae60;
+    padding-left: 8px;
+  }
 
-#loginContainer, #appContainer {
-  max-width: 800px;
-  margin: 50px auto;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(3px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .loading-overlay.active {
+    display: flex;
+  }
+  
+  .loading-overlay img {
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-}
-
-.main-layout {
-  display: flex;
-}
-
-.sidebar {
-  width: 30%;
-  border-right: 1px solid #ddd;
-  padding-right: 15px;
-}
-
-.content {
-  width: 70%;
-  padding-left: 15px;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-li.list-item:hover,
-li.task-item:hover {
-  background-color: #e9e9e9;
-}
-
-li.selected {
-  background-color: #d1e7dd;
-}
-
-.error-message {
-  color: #dc3545;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 4px;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-}
-
-input, select {
-  margin: 5px 0;
-  padding: 8px;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button, .btn, .btn-small {
-  background-color: #4CAF50;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-small {
-  padding: 5px 8px;
-  font-size: 0.9em;
-}
-
-button:hover,
-.btn:hover,
-.btn-small:hover {
-  background-color: #45a049;
-}
-
-.form-inline {
-  display: flex;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.task-title.completed {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-
-/* Modal Styles */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  animation: modalFadeIn 0.3s ease;
-}
-
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #2c3e50;
-}
-
-.close-modal {
-  font-size: 24px;
-  font-weight: bold;
-  color: #7f8c8d;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.close-modal:hover {
-  color: #e74c3c;
-}
-
-.checkbox-group {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-group input[type="checkbox"] {
-  margin-right: 8px;
-}
-
-/* Task item styling improvements */
-.task-item {
-  transition: background-color 0.2s ease;
-}
-
-.task-item:hover {
-  background-color: #f5f7fa;
-}
-
-.task-content {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  cursor: pointer;
-}
-
-.task-actions {
-  display: flex;
-  gap: 5px;
-}
-
-.edit-task {
-  background-color: #3498db;
-}
-
-.edit-task:hover {
-  background-color: #2980b9;
-}
-
-.task-title {
-  margin-right: 10px;
-  flex-grow: 1;
-}
-
-/* Priority styling */
-.high-priority {
-  border-left: 4px solid #e74c3c;
-  padding-left: 8px;
-}
-
-.medium-priority {
-  border-left: 4px solid #f39c12;
-  padding-left: 8px;
-}
-
-.low-priority {
-  border-left: 4px solid #27ae60;
-  padding-left: 8px;
-}
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  #welcomeMessage {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  #usernamePlaceholder {
+    font-weight: 600;
+    color: #3498db;
+  }
+  
+  #updateProfileBtn {
+    background-color: #2ecc71;
+  }
+  
+  #updateProfileBtn:hover {
+    background-color: #27ae60;
+  }

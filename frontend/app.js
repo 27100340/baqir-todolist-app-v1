@@ -4,6 +4,26 @@ let currentUserId = null;  // store numeric/user-id from backend
 let selectedListId = null;
 let editingTaskId = null;  // Track which task is being edited
 
+// Add these functions after the initial variables
+
+function showLoading() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.classList.add('active');
+    } else {
+        console.error('Loading overlay element not found');
+    }
+}
+
+function hideLoading() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    } else {
+        console.error('Loading overlay element not found');
+    }
+}
+
 // API Configuration
 const API_CONFIG = {
   baseUrl: "http://localhost:8000/api/v1",
@@ -34,6 +54,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
   const email = document.getElementById("signupEmail").value;
   const password = document.getElementById("signupPassword").value;
 
+  showLoading();
   try {
     // Construct query string with all required fields
     const params = new URLSearchParams({
@@ -77,16 +98,100 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
     console.error("Signup error:", error);
     document.getElementById("signupError").style.display = "block";
     document.getElementById("signupError").textContent = `Signup failed: ${error.message}`;
+  } finally {
+    hideLoading();
   }
 });
+
+// Profile update functionality
+document.getElementById("updateProfileBtn").addEventListener("click", () => {
+    // Pre-fill current username
+    document.getElementById("updateUsername").value = currentUser || "";
+    document.getElementById("updateProfileModal").classList.remove("hidden");
+  });
+  
+  document.getElementById("closeProfileModal").addEventListener("click", () => {
+    document.getElementById("updateProfileModal").classList.add("hidden");
+    document.getElementById("profileError").style.display = "none";
+    document.getElementById("profileSuccess").style.display = "none";
+  });
+  
+
+  document.getElementById("updateProfileForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoading();
+  
+    const username = document.getElementById("updateUsername").value.trim();
+    const email = document.getElementById("updateEmail").value.trim();
+    const password = document.getElementById("updatePassword").value.trim();
+  
+    // Only send fields that have been filled out
+    const params = new URLSearchParams();
+    if (username) params.append("username", username);
+    if (email) params.append("email", email);
+    if (password) params.append("password", password);
+  
+    try {
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.users}/${currentUserId}?${params.toString()}`,
+        {
+          method: "PUT",
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            "accept": "application/json"
+          },
+        }
+      );
+  
+      if (response.ok) {
+        const data = await response.json();
+        // Update current username if it was changed
+        if (username) {
+          currentUser = username;
+          document.getElementById("usernamePlaceholder").textContent = username;
+        }
+        
+        document.getElementById("profileSuccess").textContent = "Profile updated successfully!";
+        document.getElementById("profileSuccess").style.display = "block";
+        document.getElementById("profileError").style.display = "none";
+        
+        // Clear form
+        document.getElementById("updatePassword").value = "";
+        document.getElementById("updateEmail").value = "";
+        
+        // Close modal after 2 seconds
+        setTimeout(() => {
+          document.getElementById("updateProfileModal").classList.add("hidden");
+          document.getElementById("profileSuccess").style.display = "none";
+        }, 2000);
+      } else {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Update profile error:", error);
+      document.getElementById("profileError").textContent = error.message;
+      document.getElementById("profileError").style.display = "block";
+      document.getElementById("profileSuccess").style.display = "none";
+    } finally {
+      hideLoading();
+    }
+  });
+  
+  // Update the logout handler to clear the welcome message
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    // ...existing logout code...
+    document.getElementById("usernamePlaceholder").textContent = "";
+  });
 
 // LOGIN HANDLER
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-
+  showLoading();
   try {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
     const response = await fetch(
       `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.login}`,
       {
@@ -102,6 +207,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     if (response.ok) {
       token = data.access_token;
       currentUser = username;
+      document.getElementById("usernamePlaceholder").textContent = username;
       // Fetch and store user ID immediately
       const userRes = await fetch(
         `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.users}/${currentUser}`,
@@ -124,6 +230,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     document.getElementById("loginError").textContent = `Login failed: ${
       error.message
     }`;
+  } finally {
+    hideLoading();
   }
 });
 
@@ -148,6 +256,7 @@ document.getElementById("createListForm").addEventListener("submit", async (e) =
   const newListName = document.getElementById("newListName").value.trim();
   if (!newListName || !currentUserId) return;
 
+  showLoading();
   try {
     // POST using query parameter user_id and name
     const query = new URLSearchParams({ 
@@ -167,6 +276,8 @@ document.getElementById("createListForm").addEventListener("submit", async (e) =
     loadTodoLists();
   } catch (error) {
     console.error("Create list error:", error);
+  } finally {
+    hideLoading();
   }
 });
 
@@ -181,6 +292,7 @@ document.getElementById("createTaskForm").addEventListener("submit", async (e) =
 
   if (!selectedListId || !title || !currentUserId) return;
 
+  showLoading();
   try {
     // Construct query string with all required fields
     const params = new URLSearchParams({
@@ -209,6 +321,8 @@ document.getElementById("createTaskForm").addEventListener("submit", async (e) =
     loadTasksForList(selectedListId);
   } catch (error) {
     console.error("Create task error:", error);
+  } finally {
+    hideLoading();
   }
 });
 
@@ -223,6 +337,7 @@ document.getElementById("editTaskForm").addEventListener("submit", async (e) => 
   const priority = parseInt(document.getElementById("editTaskPriority").value);
   const completed = document.getElementById("editTaskCompleted").checked;
   
+  showLoading();
   try {
     // Construct query string with all fields to update
     const params = new URLSearchParams({
@@ -255,6 +370,8 @@ document.getElementById("editTaskForm").addEventListener("submit", async (e) => 
     console.error("Update task error:", error);
     document.getElementById("editTaskError").textContent = `Error: ${error.message}`;
     document.getElementById("editTaskError").style.display = "block";
+  } finally {
+    hideLoading();
   }
 });
 
@@ -278,6 +395,7 @@ function closeEditTaskModal() {
 
 // FETCH ALL TODO LISTS (with their tasks) FOR THE CURRENT USER
 async function loadTodoLists() {
+  showLoading();
   try {
     if (!currentUserId) return;
     // GET /todolists/{user_id}/all
@@ -341,6 +459,7 @@ async function loadTodoLists() {
       // Delete list button
       li.querySelector(".delete-list").addEventListener("click", async (e) => {
         e.stopPropagation();
+        showLoading();
         try {
           console.log(`Attempting to delete todolist: ${list.id} for user: ${currentUserId}`);
           
@@ -389,6 +508,8 @@ async function loadTodoLists() {
         } catch (error) {
           console.error("Delete list error:", error);
           alert(`Failed to delete list: ${error.message}`);
+        } finally {
+          hideLoading();
         }
       });
 
@@ -396,11 +517,14 @@ async function loadTodoLists() {
     });
   } catch (error) {
     console.error("Error loading todo lists:", error);
+  } finally {
+    hideLoading();
   }
 }
 
 // FETCH ALL TASKS FOR A GIVEN LIST
 async function loadTasksForList(listId) {
+  showLoading();
   try {
     const response = await fetch(
       `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.todolists}/${listId}/tasks`,
@@ -459,6 +583,7 @@ async function loadTasksForList(listId) {
       // Toggle completion
       li.querySelector(".task-complete").addEventListener("change", async (e) => {
         const completed = e.target.checked;
+        showLoading();
         try {
           const bodyParams = new URLSearchParams({ completed: completed.toString() });
           const res = await fetch(
@@ -472,12 +597,15 @@ async function loadTasksForList(listId) {
           loadTasksForList(listId);
         } catch (error) {
           console.error("Update task error:", error);
+        } finally {
+          hideLoading();
         }
       });
 
       // Delete task
       li.querySelector(".delete-task").addEventListener("click", async (e) => {
         e.stopPropagation();
+        showLoading();
         try {
           const res = await fetch(
             `${API_CONFIG.baseUrl}/tasks/${task.id}?todolist_id=${listId}`,
@@ -490,6 +618,8 @@ async function loadTasksForList(listId) {
           loadTasksForList(listId);
         } catch (error) {
           console.error("Delete task error:", error);
+        } finally {
+          hideLoading();
         }
       });
 
@@ -497,6 +627,8 @@ async function loadTasksForList(listId) {
     });
   } catch (error) {
     console.error("Error loading tasks:", error);
+  } finally {
+    hideLoading();
   }
 }
 

@@ -41,6 +41,7 @@ class Command:
                    password: str = "") -> UserDTO:
         try:
             user_dto = uow.user_repository.get_user(user_id)
+            hashed_password = get_password_hash(password)
             if not user_dto:
                 raise ValueError(f"User with id {user_id} not found")
             
@@ -49,7 +50,7 @@ class Command:
             if email:
                 user_dto.email = email
             if password:
-                user_dto.password = password
+                user_dto.password = hashed_password
                 
             uow.user_repository.update(user_dto)
             return user_dto

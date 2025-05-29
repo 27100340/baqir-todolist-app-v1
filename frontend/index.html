@@ -248,8 +248,12 @@
 
   <div id="appContainer" class="hidden">
     <div class="header">
-      <h1>Todo App</h1>
-      <button id="logoutBtn">Logout</button>
+      <h1>Todo List App</h1>
+      <div class="user-section">
+        <span id="welcomeMessage">Welcome, <span id="usernamePlaceholder"></span></span>
+        <button id="updateProfileBtn" class="btn">Update Profile</button>
+        <button id="logoutBtn" class="btn">Logout</button>
+      </div>
     </div>
     
     <div class="container">
@@ -330,6 +334,37 @@
     </form>
   </div>
 </div>
+
+<!-- Add this modal for profile update -->
+<div id="updateProfileModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Update Profile</h3>
+      <span class="close-modal" id="closeProfileModal">&times;</span>
+    </div>
+    <div id="profileError" class="error"></div>
+    <div id="profileSuccess" class="success"></div>
+    <form id="updateProfileForm">
+      <div class="form-group">
+        <label for="updateUsername">Username</label>
+        <input type="text" id="updateUsername" placeholder="New username">
+      </div>
+      <div class="form-group">
+        <label for="updateEmail">Email</label>
+        <input type="email" id="updateEmail" placeholder="New email">
+      </div>
+      <div class="form-group">
+        <label for="updatePassword">Password</label>
+        <input type="password" id="updatePassword" placeholder="New password">
+      </div>
+      <button type="submit" class="btn">Update Profile</button>
+    </form>
+  </div>
+</div>
+
+  <div class="loading-overlay">
+    <img src="assets/loading.gif" alt="Loading...">
+  </div>
   <script src="app.js"></script>
 </body>
 </html>

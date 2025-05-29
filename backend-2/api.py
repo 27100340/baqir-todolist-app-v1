@@ -284,7 +284,7 @@ def update_todolist_task(
             uow=uow
         )
         uow.commit_close()
-        return result  # Return the TaskDTO object instead of a message
+        return result  
     except ValueError as e:
         uow.close()
         raise HTTPException(status_code=404, detail=str(e))
